@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body class="bg-[#f2f2f2] flex items-center flex-col">
+    <form id="submitTodo" class="w-full max-w-[500px] p-[20px] rounded bg-white shadow mt-[40px]">
+        <div class="flex justify-center"><h1 class="font-bold">Add todo</h1></div>
+
+        <div>
+           <label for="todo">
+            <span class="text-slate-500 text-sm">What todo today?</span>
+             <input type="text" placeholder="" name="" id="text-todo" class="w-full border shadow rounded py-2 px-4" >
+           </label>
+           <div><input type="submit"></div>
+        </div>
+    </form>
+
+    <div class="max-w-[500px] w-full p-[20px] bg-white rounded shadow border mt-6 todo-div ">
+        <div class="w-full border-b-[2px] border-b-voilet-500 px-4 py-3 flex justify-center">
+           
+                <div class="animate-spin w-7 h-7 border-t-3 border-blue-500 border-solid rounded-full"></div>
+                  
+                               
+            </div>
+        </div>
+      
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.js"></script>
+
+    <!-- <script type="module" src="app.mjs"></script> -->
+    <script>
+
+       
+
+    
+
+
+        document.querySelector("#submitTodo").addEventListener("submit",(e)=>{
+            e.preventDefault()
+            let postText = document.querySelector("#text-todo").value;
+
+            // baseUrl/api/v1/post
+            axios.post(`/post`, {
+                text: postText
+            })
+                .then(function (response) {
+                    console.log(response.data);
+                    // getAllPost();
+                })
+                .catch(function (error) {
+                    // handle error
+                    console.log(error);
+                })
+                getposts()
+        })
+
+        let todos;
+
+      
+         function getposts(){
+        axios.get(`/posts`)
+                .then(function (response) {
+                    console.log(response.data);
+
+                    response.data.map((forEachOne)=>{
+                        todos += `
+                            <div id='${forEachOne.id}' onclick="postsbyid('${forEachOne.id}')" class="w-full border-b-[2px] border-b-voilet-500 px-4 py-3 flex justify-between todoh">
+            <h1>${forEachOne.text}</h1>
+            <div id="options-div" >
+                ...
+                <div style="display:none;" class="flex flex-col absolute p-[5px] text-sm rounded shadow text-slate-500  w-16 h-24 bg-white">
+                    <button onclick="delPost('$forEachOne].id}')">Delete</button>
+                </div>                
+            </div>
+        </div>`
+                    })
+                   
+              
+                    
+
+        document.querySelector(".todo-div").innerHTML = todos
+                
+               
+        let This_is_todo_divs = document.querySelectorAll(".todoh")
+
+                
+This_is_todo_divs.forEach((oneeach)=>{
+
+        oneeach.addEventListener("click",()=>{
+
+            // postbyid()
+            for (let i = 0; i < This_is_todo_divs.length; i++) {
+                 This_is_todo_divs[i].querySelector("#options-div div").style.display = "none";
+                
+            }
+
+
+    oneeach.querySelector("#options-div div").style.display = "block"
+        })
+
+
+})
+      
+    
+                })
+                .catch(function (error) {
+                    // handle error
+                    console.log(error.data);
+                })
+       }
+        
+
+   
+         function delPost(postId) {
+
+            console.log("delete: ", postId);
+
+
+            // baseUrl/post
+            axios.delete(`/post/${postId}`)
+                .then(function (response) {
+                    console.log(response.data);
+
+                    getposts()
+                })
+                .catch(function (error) {
+                    // handle error
+                    console.log(error);
+                    document.querySelector("#result").innerHTML = "error in post submission"
+                })
+        }
+
+        // window.editPost = (postId, title, text) => {
+
+        //     console.log("delete: ", postId);
+
+        //     document.querySelector(`#card-${postId}`).innerHTML =
+        //         `<form onsubmit="savePost('${postId}')">
+        //             title: <input type='text' value='${title}' id='title-${postId}' />
+        //             <br/>
+        //             text: <input type='text' value='${text}' id='text-${postId}' />
+        //             <br/>
+        //             <button>Save</button>
+
+        //         </form>`
+        // }
+        // window.savePost = (postId)=>{
+        //     const updatedTitle = document.querySelector(`#title-${postId}`).value;
+        //     const updatedText = document.querySelector(`#text-${postId}`).value;
+
+        //     axios.put(`/api/v1/post/${postId}`, {
+        //         title: updatedTitle,
+        //         text: updatedText
+        //     })
+        //         .then(function (response) {
+        //             console.log(response.data);
+        //         })
+        //         .catch(function (error) {
+        //             // handle error
+        //             console.log(error.data);
+        //             document.querySelector("#result").innerHTML = "error in post submission"
+        //         })
+
+        // }
+
+
+
+        document.addEventListener("DOMContentLoaded",()=>{
+            getposts()
+        })
+
+       
+    </script>
+
+</body>
+</html>
